@@ -16,14 +16,22 @@ A simple web application that uses the **PokeAPI** to retrieve real-time informa
    ```bash
    git clone https://github.com/MarkEdzon/api-project.git
    ```
+
 2. Navigate to the project folder:
 
    ```bash
    cd api-project
    ```
-3. Open `index.html` in any web browser (Google Chrome, Microsoft Edge, Firefox, or Safari).
 
-**Optional:** If you are using **Visual Studio Code**, right-click `index.html` and select **Open with Live Server** for a better development experience.
+3. Open the project in Visual Studio Code:
+
+   ```bash
+   code .
+   ```
+
+4. Open `index.html` in any web browser (Google Chrome, Microsoft Edge, Firefox, or Safari).
+
+**Optional:** If you have the **Live Server** extension installed in Visual Studio Code, right-click `index.html` and select **Open with Live Server** for a better development experience.
 
 ## API Used
 
