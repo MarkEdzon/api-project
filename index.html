@@ -3,23 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon Finder</title>
+    <title>Pokémon Explorer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Header: Pokémon Explorer</h1>
-        <div class="search-box">
-            <input type="text" id="pokemon-input" placeholder="Mag-type ng pangalan ng Pokémon (e.g., pikachu, charizard)...">
-            <button id="search-btn">Hanapin</button>
-        </div>
 
-        <!-- Dito lalabas ang data ng Pokémon o ang Error Message -->
-        <div id="result-container">
-            <p class="placeholder-text">Maghanap ng Pokémon para makita ang detalye.</p>
-        </div>
+<div class="container">
+
+    <h1>Pokémon Explorer</h1>
+
+    <p class="subtitle">
+        Search any Pokémon and explore its information using the PokéAPI.
+    </p>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="pokemon-input"
+            placeholder="Enter Pokémon name..."
+        >
+
+        <button id="search-btn">
+            Search
+        </button>
+
+        <button id="random-btn">
+            Random
+        </button>
     </div>
 
-    <script src="app.js"></script>
+    <div id="result-container">
+
+        <p class="placeholder">
+            Search a Pokémon to see its details.
+        </p>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>
