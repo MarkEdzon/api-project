@@ -1,74 +1,246 @@
-// app.js
-
-// Kuhanin ang mga kailangang HTML elements
 const searchBtn = document.getElementById('search-btn');
+const randomBtn = document.getElementById('random-btn');
 const pokemonInput = document.getElementById('pokemon-input');
 const resultContainer = document.getElementById('result-container');
 
-// Function para kumuha ng data mula sa PokeAPI (GET Request)
-async function getPokemonData() {
-    const query = pokemonInput.value.trim().toLowerCase();
+// ─── TEAMMATE'S FEATURE (BRANCH: feature-search-history) ───
+// Your teammate will declare a global array here to store the search history.
 
-    // Validasyon kung walang tinype ang user
-    if (!query) {
-        resultContainer.innerHTML = '<p class="error-text">⚠️ Paki-type muna ang pangalan ng Pokémon.</p>';
+// Main Function to Fetch Pokémon Data
+async function getPokemonData(targetQuery) {
+
+    // If no targetQuery is provided, use the value from the input field.
+    const query = targetQuery || pokemonInput.value.trim().toLowerCase();
+
+    if (!query && !targetQuery) {
+        renderError('Please enter a Pokémon name or ID first.');
         return;
     }
 
-    // Ang URL ng PokeAPI endpoint
     const apiUrl = `https://pokeapi.co/api/v2/pokemon/${query}`;
 
     try {
-        // Magpakita ng loading text habang naghihintay ng data
-        resultContainer.innerHTML = '<p class="loading-text">Naghahanap...</p>';
+
+        renderLoading();
 
         const response = await fetch(apiUrl);
 
-        // Requirement 6: Error Handling kapag hindi nahanap ang Pokémon (Status 404)
         if (!response.ok) {
-            throw new Error('Hindi nahanap ang Pokémon. Siguraduhing tama ang spelling!');
+            throw new Error(`Pokémon "${query}" not found. Check your spelling and try again!`);
         }
 
-        // I-convert ang response sa JSON format
         const data = await response.json();
 
-        // Requirement 5: Data Presentation - Ipakita ang data sa magandang paraan
+        // Display the Pokémon information
         displayPokemon(data);
 
+        // Clear the input field after a successful search
+        pokemonInput.value = '';
+
+        // ─── TEAMMATE'S FEATURE (BRANCH: feature-search-history) ───
+        // Your teammate will add the logic here to save searched Pokémon
+        // into the search history list.
+
     } catch (error) {
-        // I-log ang error sa console para sa developer at magpakita ng error sa user
+
         console.error('API Error:', error);
-        resultContainer.innerHTML = `
-            <div class="error-box">
-                <p>⚠️ <strong>Error:</strong> ${error.message}</p>
-            </div>
-        `;
+
+        renderError(error.message);
+
     }
+
 }
 
-// Function para i-render ang data sa screen
-function displayPokemon(pokemon) {
-    // Kuhanin ang mga types ng pokemon (e.g., grass, poison) at pagsamahin
-    const types = pokemon.types.map(t => t.type.name).join(', ');
+// Display Loading Screen
+function renderLoading() {
 
-    // I-inject ang HTML structure kasama ang data ng Pokémon
     resultContainer.innerHTML = `
-        <div class="pokemon-card">
-            <img class="pokemon-img" src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
-            <h2 class="pokemon-name">${pokemon.name.toUpperCase()}</h2>
-            <div class="pokemon-info">
-                <p><strong>Type:</strong> ${types}</p>
-                <p><strong>Height:</strong> ${pokemon.height / 10} m</p>
-                <p><strong>Weight:</strong> ${pokemon.weight / 10} kg</p>
-            </div>
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Scanning Pokédex database, please wait...</p>
         </div>
     `;
+
 }
 
-// Requirement 4: Event Listeners para sa click ng button at pagpindot ng 'Enter'
-searchBtn.addEventListener('click', getPokemonData);
-pokemonInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        getPokemonData();
+// Display Error Message
+function renderError(message) {
+
+    resultContainer.innerHTML = `
+        <div class="error-card animate-fade">
+            <span class="error-icon">❌</span>
+            <h3>Data Fetch Error</h3>
+            <p>${message}</p>
+        </div>
+    `;
+
+}
+
+// Display Pokémon Information
+function displayPokemon(pokemon) {
+
+    // Generate Type Badges
+    const typesHTML = pokemon.types.map(t =>
+        `<span class="type-badge ${t.type.name}">${t.type.name.toUpperCase()}</span>`
+    ).join('');
+
+    // Combine all abilities into one string
+    const abilities = pokemon.abilities
+        .map(a => a.ability.name.replace('-', ' '))
+        .join(', ');
+
+    // Base Stats
+    const hp = pokemon.stats[0].base_stat;
+    const attack = pokemon.stats[1].base_stat;
+    const defense = pokemon.stats[2].base_stat;
+    const speed = pokemon.stats[5].base_stat;
+
+    resultContainer.innerHTML = `
+        <div class="pokemon-card animate-fade">
+
+            <div class="card-header">
+                <h2 class="pokemon-name">${pokemon.name.toUpperCase()}</h2>
+                <span class="pokemon-id">#${String(pokemon.id).padStart(3, '0')}</span>
+            </div>
+
+            <div class="image-wrapper-bg">
+                <img
+                    id="pokemon-img"
+                    class="pokemon-img"
+                    src="${pokemon.sprites.front_default}"
+                    alt="${pokemon.name}">
+            </div>
+
+            <div class="pokemon-info-grid">
+
+                <div class="info-row">
+                    <span class="info-label">Type</span>
+
+                    <div class="type-container">
+                        ${typesHTML}
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Abilities</span>
+                    <span class="info-value text-capitalize">${abilities}</span>
+                </div>
+
+                <div class="info-row-split">
+
+                    <div>
+                        <span class="info-label">Height</span>
+                        <span class="info-value">${pokemon.height / 10} m</span>
+                    </div>
+
+                    <div>
+                        <span class="info-label">Weight</span>
+                        <span class="info-value">${pokemon.weight / 10} kg</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button id="play-cry-btn">
+                🔊 Play Pokémon Cry
+            </button>
+
+            <div class="stats-dashboard">
+
+                <h3>Base Stats</h3>
+
+                <div class="stat-bar-group">
+                    <div class="stat-label-row">
+                        <span>HP</span>
+                        <strong>${hp}</strong>
+                    </div>
+
+                    <div class="bar-track">
+                        <div class="bar-fill hp-bar" style="width:${Math.min((hp/255)*100,100)}%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-bar-group">
+                    <div class="stat-label-row">
+                        <span>Attack</span>
+                        <strong>${attack}</strong>
+                    </div>
+
+                    <div class="bar-track">
+                        <div class="bar-fill atk-bar" style="width:${Math.min((attack/190)*100,100)}%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-bar-group">
+                    <div class="stat-label-row">
+                        <span>Defense</span>
+                        <strong>${defense}</strong>
+                    </div>
+
+                    <div class="bar-track">
+                        <div class="bar-fill def-bar" style="width:${Math.min((defense/230)*100,100)}%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-bar-group">
+                    <div class="stat-label-row">
+                        <span>Speed</span>
+                        <strong>${speed}</strong>
+                    </div>
+
+                    <div class="bar-track">
+                        <div class="bar-fill spd-bar" style="width:${Math.min((speed/180)*100,100)}%"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    // Pokémon Cry Feature
+    const playCryBtn = document.getElementById("play-cry-btn");
+
+    if (pokemon.cries && pokemon.cries.latest) {
+
+        playCryBtn.addEventListener("click", () => {
+
+            const audio = new Audio(pokemon.cries.latest);
+
+            audio.play();
+
+        });
+
+    } else {
+
+        playCryBtn.disabled = true;
+
+        playCryBtn.textContent = "Cry Not Available";
+
     }
+
+}
+
+// Generate a Random Pokémon
+randomBtn.addEventListener('click', () => {
+
+    const randomId = Math.floor(Math.random() * 1000) + 1;
+
+    getPokemonData(randomId);
+
+});
+
+// Search Button Event
+searchBtn.addEventListener('click', () => getPokemonData());
+
+// Allow Search Using the Enter Key
+pokemonInput.addEventListener('keypress', (e) => {
+
+    if (e.key === 'Enter') {
+
+        getPokemonData();
+
+    }
+
 });
