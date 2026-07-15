@@ -5,39 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokémon Explorer</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>Pokémon Explorer</h1>
-
-    <p class="subtitle">
-        Search any Pokémon and explore its information using the PokéAPI.
-    </p>
+    <header>
+        <h1>Pokémon Explorer</h1>
+        <p class="subtitle">
+            Search any Pokémon and explore its information using the PokéAPI.
+        </p>
+    </header>
 
     <div class="search-box">
-        <input
-            type="text"
-            id="pokemon-input"
-            placeholder="Enter Pokémon name..."
-        >
+        <div class="input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input
+                type="text"
+                id="pokemon-input"
+                placeholder="Enter Pokémon name or ID..."
+                autocomplete="off"
+            >
+        </div>
 
         <button id="search-btn">
             Search
         </button>
 
         <button id="random-btn">
-            Random
+            Random 🎲
         </button>
     </div>
 
+    <div id="history-container"></div>
+
     <div id="result-container">
-
-        <p class="placeholder">
-            Search a Pokémon to see its details.
-        </p>
-
+        <div class="placeholder-state">
+            <div class="animated-pulse">✨</div>
+            <p class="placeholder">Search a Pokémon to see its details.</p>
+        </div>
     </div>
 
 </div>
