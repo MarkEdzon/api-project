@@ -1,87 +1,842 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic page information -->
-    <meta charset="UTF-8">
-    <!-- Makes the website responsive on different screen sizes -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ PokéBattle · Categories & Sounds</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(145deg, #0b1120, #1a2332);
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+      color: #f1f5f9;
+      padding: 1.5rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .dashboard {
+      max-width: 1500px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr;
+      gap: 1.8rem;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(6px);
+      border-radius: 3rem;
+      padding: 1.8rem 2rem 2.2rem;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 30px 50px -20px #000;
+    }
+    @media (max-width: 950px) { .dashboard { grid-template-columns: 1fr; gap: 2.2rem; } }
 
-    <!-- Title that appears in the browser tab -->
-    <title>Pokémon Explorer</title>
+    .grid-panel {
+      background: rgba(0,0,0,0.25);
+      border-radius: 2rem;
+      padding: 1.2rem 0.8rem 1.5rem;
+      backdrop-filter: blur(2px);
+      border: 1px solid #2d3a4f;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0.6rem 0.8rem 0.6rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .panel-header h2 { font-weight: 600; font-size: 1.2rem; letter-spacing: -0.3px; display: flex; gap: 0.5rem; align-items: center; }
+    .panel-header h2 i { color: #facc15; }
+    .search-box {
+      display: flex;
+      gap: 0.5rem;
+      background: #1e2a3a;
+      padding: 0.3rem 0.3rem 0.3rem 1rem;
+      border-radius: 60px;
+      border: 1px solid #334155;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      padding: 0.4rem 0.2rem;
+      color: #f1f5f9;
+      font-weight: 500;
+      outline: none;
+      width: 130px;
+      font-size: 0.85rem;
+    }
+    .search-box input::placeholder { color: #5a6a7e; }
+    .search-box button {
+      background: #facc15;
+      border: none;
+      border-radius: 40px;
+      padding: 0.3rem 1rem;
+      font-weight: 700;
+      color: #0f172a;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.1s;
+    }
+    .search-box button:hover { background: #fde047; transform: scale(1.02); }
+    .random-btn {
+      background: #334155 !important;
+      color: #f1f5f9 !important;
+      box-shadow: none !important;
+    }
+    .random-btn:hover { background: #475569 !important; }
 
-    <!-- Connect my external CSS file -->
-    <link rel="stylesheet" href="style.css">
+    .grid-pokemon {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.8rem;
+      max-height: 460px;
+      overflow-y: auto;
+      padding: 0.2rem 0.2rem 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #facc15 #1e2a3a;
+    }
+    .grid-pokemon::-webkit-scrollbar { width: 5px; }
+    .grid-pokemon::-webkit-scrollbar-track { background: #1e2a3a; border-radius: 10px; }
+    .grid-pokemon::-webkit-scrollbar-thumb { background: #facc15; border-radius: 10px; }
 
-    <!-- Import Google Fonts that I want to use for the design -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    .pokemon-card {
+      background: #1a2636;
+      border-radius: 1.5rem;
+      padding: 0.4rem 0.2rem 0.6rem;
+      text-align: center;
+      border: 1px solid #2d3a4f;
+      cursor: pointer;
+      transition: 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .pokemon-card:hover { transform: translateY(-4px); border-color: #facc15; background: #253141; }
+    .pokemon-card img { width: 60px; height: 60px; filter: drop-shadow(0 4px 8px #00000066); }
+    .pokemon-card .name { font-weight: 600; font-size: 0.7rem; text-transform: capitalize; line-height: 1.2; }
+    .pokemon-card .id { font-size: 0.55rem; color: #94a3b8; background: #0f172a; padding: 0.05rem 0.6rem; border-radius: 30px; }
+    .pokemon-card .category-badge {
+      font-size: 0.5rem;
+      background: #2d3a4f;
+      padding: 0.05rem 0.5rem;
+      border-radius: 30px;
+      margin-top: 0.1rem;
+      color: #cbd5e1;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .pokemon-card .detail-badge {
+      position: absolute;
+      top: 4px; right: 6px;
+      font-size: 0.5rem;
+      background: #facc15;
+      color: #0f172a;
+      padding: 0.05rem 0.4rem;
+      border-radius: 30px;
+      font-weight: 700;
+      opacity: 0.7;
+    }
+
+    .battle-panel {
+      background: rgba(0,0,0,0.3);
+      border-radius: 2rem;
+      padding: 1.2rem 1rem 1.8rem;
+      border: 1px solid #2d3a4f;
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .battle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.2rem;
+      border-bottom: 1px solid #2d3a4f;
+    }
+    .battle-header h2 { font-weight: 600; font-size: 1.1rem; display: flex; gap: 0.4rem; align-items: center; }
+    .battle-header h2 i { color: #facc15; }
+    .reset-battle-btn {
+      background: #475569;
+      border: none;
+      padding: 0.2rem 1.2rem;
+      border-radius: 60px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: 0.1s;
+    }
+    .reset-battle-btn:hover { background: #64748b; }
+
+    .fighters-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 0.5rem;
+      background: #111c2b;
+      border-radius: 2rem;
+      padding: 0.8rem 0.3rem;
+      border: 1px solid #2d3a4f;
+      flex-wrap: wrap;
+    }
+    .fighter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+      min-width: 80px;
+      cursor: default;
+    }
+    .fighter img { width: 60px; height: 60px; filter: drop-shadow(0 0 8px #facc1533); }
+    .fighter .fname { font-weight: 700; text-transform: capitalize; font-size: 0.85rem; }
+    .fighter .fcategory { font-size: 0.55rem; background: #1e2a3a; padding: 0.05rem 0.6rem; border-radius: 30px; color: #94a3b8; }
+    .hp-bar { width: 80px; height: 8px; background: #1e2a3a; border-radius: 20px; overflow: hidden; border: 1px solid #3a4a5e; }
+    .hp-fill { height: 100%; background: #22c55e; transition: width 0.2s ease; }
+    .hp-fill.low { background: #ef4444; }
+    .hp-fill.mid { background: #eab308; }
+    .hp-text { font-size: 0.6rem; color: #94a3b8; }
+    .vs-badge { font-size: 1.2rem; font-weight: 800; color: #facc15; background: #0f172a; padding: 0.1rem 0.7rem; border-radius: 40px; border: 1px solid #facc15; }
+
+    .attack-panel {
+      background: #0f1a27;
+      border-radius: 1.8rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid #2d3a4f;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .attack-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .attack-btn {
+      background: #1e2a3a;
+      border: 1px solid #3a4a5e;
+      border-radius: 60px;
+      padding: 0.4rem 1.2rem;
+      color: #f1f5f9;
+      font-weight: 600;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .attack-btn:hover { background: #2d3a4f; border-color: #facc15; }
+    .attack-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: #2d3a4f; }
+    .attack-btn .dmg-badge { background: #dc2626; color: white; border-radius: 40px; padding: 0.05rem 0.6rem; font-size: 0.6rem; }
+
+    .battle-log {
+      background: #0f172a;
+      padding: 0.4rem 1rem;
+      border-radius: 60px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      border: 1px solid #2d3a4f;
+      min-height: 2.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .battle-log i { color: #facc15; }
+    .log-message { font-weight: 500; }
+
+    .detail-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .detail-modal {
+      background: #1e2a3a;
+      border-radius: 2.5rem;
+      padding: 2rem 2.5rem;
+      max-width: 380px;
+      width: 90%;
+      border: 1px solid #facc15;
+      box-shadow: 0 30px 50px #000000aa;
+      text-align: center;
+      position: relative;
+    }
+    .detail-modal img { width: 120px; height: 120px; filter: drop-shadow(0 8px 20px #000); }
+    .detail-modal .dname { font-size: 1.8rem; font-weight: 700; text-transform: capitalize; }
+    .detail-modal .dcategory { font-size: 0.8rem; background: #2d3a4f; padding: 0.1rem 1rem; border-radius: 30px; display: inline-block; margin: 0.2rem 0; }
+    .detail-modal .did { color: #94a3b8; font-size: 0.9rem; }
+    .detail-modal .d-stats { display: flex; gap: 1.2rem; justify-content: center; margin: 0.8rem 0; font-size: 0.8rem; background: #0f172a; padding: 0.4rem; border-radius: 60px; }
+    .detail-modal .d-attacks { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-top: 0.5rem; }
+    .detail-modal .d-attack-tag { background: #2d3a4f; padding: 0.2rem 0.8rem; border-radius: 30px; font-size: 0.7rem; display: inline-flex; gap: 0.4rem; align-items: center; }
+    .detail-modal .close-detail { position: absolute; top: 12px; right: 18px; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
+    .detail-modal .close-detail:hover { color: #facc15; }
+
+    #history-container { display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; margin: 0.2rem 0 0.4rem; }
+    .history-chip { background: #1e2a3a; padding: 0.1rem 0.8rem; border-radius: 30px; font-size: 0.7rem; border: 1px solid #334155; color: #cbd5e1; cursor: pointer; }
+    .history-chip:hover { border-color: #facc15; }
+    .placeholder-state { text-align: center; padding: 1.5rem 0; color: #64748b; }
+  </style>
 </head>
-
 <body>
+<div class="dashboard">
 
-<!-- Main container that holds everything on the page -->
-<div class="container">
-
-    <!-- Header section with the title and short description -->
-    <header>
-        <h1>Pokémon Explorer</h1>
-        <p class="subtitle">
-            Search any Pokémon and explore its information using the PokéAPI.
-        </p>
-    </header>
-
-    <!-- This section contains the search input and buttons -->
-    <div class="search-box">
-
-        <!-- Wrapper so I can place the search icon inside the input area -->
-        <div class="input-wrapper">
-
-            <!-- Search icon for a nicer UI -->
-            <span class="search-icon">🔍</span>
-
-            <!-- User enters a Pokémon name or ID here -->
-            <input
-                type="text"
-                id="pokemon-input"
-                placeholder="Enter Pokémon name or ID..."
-                autocomplete="off"
-            >
-        </div>
-
-        <!-- Button that starts the Pokémon search -->
-        <button id="search-btn">
-            Search
-        </button>
-
-        <!-- Button that picks a random Pokémon -->
-        <button id="random-btn">
-            Random 🎲
-        </button>
+  <!-- LEFT: GRID -->
+  <div class="grid-panel">
+    <div class="panel-header">
+      <h2><i class="fas fa-grid-2"></i> Pokédex</h2>
+      <div class="search-box">
+        <input type="text" id="pokemon-input" placeholder="Search..." autocomplete="off">
+        <button id="search-btn"><i class="fas fa-search"></i></button>
+        <button id="random-btn" class="random-btn"><i class="fas fa-dice"></i></button>
+      </div>
     </div>
-
-    <!-- This is where the search history will be displayed using JavaScript -->
     <div id="history-container"></div>
+    <div id="pokemon-grid" class="grid-pokemon"></div>
+  </div>
 
-    <!-- This section shows the Pokémon information after searching -->
-    <div id="result-container">
-
-        <!-- Default message shown before the user searches -->
-        <div class="placeholder-state">
-
-            <!-- Small animation to make the page look less empty -->
-            <div class="animated-pulse">✨</div>
-
-            <!-- Instructions for the user -->
-            <p class="placeholder">
-                Search a Pokémon to see its details.
-            </p>
-        </div>
-
+  <!-- RIGHT: BATTLE -->
+  <div class="battle-panel">
+    <div class="battle-header">
+      <h2><i class="fas fa-sword"></i> Battle Arena</h2>
+      <button id="reset-battle-btn" class="reset-battle-btn"><i class="fas fa-undo-alt"></i> Reset</button>
+    </div>
+    <div class="fighters-row" id="fighters-row">
+      <div class="fighter" id="fighter1">
+        <img id="f1-img" src="" alt="fighter1">
+        <span class="fname" id="f1-name">—</span>
+        <span class="fcategory" id="f1-category">—</span>
+        <div class="hp-bar"><div class="hp-fill" id="f1-hp" style="width:100%"></div></div>
+        <span class="hp-text" id="f1-hp-text">HP 100</span>
+      </div>
+      <div class="vs-badge">⚔️</div>
+      <div class="fighter" id="fighter2">
+        <img id="f2-img" src="" alt="fighter2">
+        <span class="fname" id="f2-name">—</span>
+        <span class="fcategory" id="f2-category">—</span>
+        <div class="hp-bar"><div class="hp-fill" id="f2-hp" style="width:100%"></div></div>
+        <span class="hp-text" id="f2-hp-text">HP 100</span>
+      </div>
     </div>
 
+    <div class="attack-panel">
+      <div class="attack-options" id="attack-options">
+        <button class="attack-btn" data-dmg="8" data-sound="tackle"><i class="fas fa-fist-raised"></i> Tackle <span class="dmg-badge">8</span></button>
+        <button class="attack-btn" data-dmg="12" data-sound="flame"><i class="fas fa-fire"></i> Flame <span class="dmg-badge">12</span></button>
+        <button class="attack-btn" data-dmg="15" data-sound="thunder"><i class="fas fa-bolt"></i> Thunder <span class="dmg-badge">15</span></button>
+        <button class="attack-btn" data-dmg="20" data-sound="hydro"><i class="fas fa-water"></i> Hydro <span class="dmg-badge">20</span></button>
+      </div>
+      <div class="battle-log" id="battle-log">
+        <i class="fas fa-circle-info"></i> <span class="log-message">Select two Pokémon from the grid</span>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Connect my JavaScript file that handles the search functionality -->
-<script src="app.js"></script>
+<!-- DETAIL MODAL -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-modal">
+    <button class="close-detail" id="closeDetail"><i class="fas fa-times"></i></button>
+    <img id="detailImg" src="" alt="detail">
+    <div class="dname" id="detailName">—</div>
+    <div class="dcategory" id="detailCategory">🌿 Nature</div>
+    <div class="did" id="detailId">#000</div>
+    <div class="d-stats"><span>❤️ HP 100</span><span>⚡ ATK 20</span><span>🛡️ DEF 15</span></div>
+    <div class="d-attacks" id="detailAttacks"></div>
+    <div style="margin-top:0.8rem; font-size:0.7rem; color:#94a3b8;"><i class="fas fa-mouse-pointer"></i> Click to select for battle</div>
+  </div>
+</div>
 
+<script>
+  (function() {
+    // ----- POKEMON CATEGORIES + ATTACKS -----
+    const categoryMap = {
+      // Grass / Nature
+      'bulbasaur': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 10 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Growth', dmg: 6 }] },
+      'ivysaur': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 12 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Growth', dmg: 8 }] },
+      'venusaur': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 14 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Growth', dmg: 10 }] },
+      'oddish': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 8 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Growth', dmg: 6 }] },
+      'gloom': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 10 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Growth', dmg: 8 }] },
+      'vileplume': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 14 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Growth', dmg: 10 }] },
+      'bellsprout': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 8 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Growth', dmg: 6 }] },
+      'weepinbell': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 10 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Growth', dmg: 8 }] },
+      'victreebel': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 14 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Growth', dmg: 10 }] },
+      'exeggcute': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 8 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Growth', dmg: 6 }] },
+      'exeggutor': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 14 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Growth', dmg: 10 }] },
+      'tangela': { category: '🌿 Nature', attacks: [{ icon: 'fa-leaf', label: 'Vine Whip', dmg: 10 }, { icon: 'fa-seedling', label: 'Razor Leaf', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Growth', dmg: 8 }] },
+
+      // Fire
+      'charmander': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 12 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'charmeleon': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 14 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'charizard': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 16 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 22 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'vulpix': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 10 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'ninetales': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 14 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'growlithe': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 10 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'arcanine': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 16 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 22 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'ponyta': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 10 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'rapidash': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 14 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'magmar': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 12 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'flareon': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 14 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'moltres': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 18 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 24 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 14 }, { icon: 'fa-shield', label: 'Growl', dmg: 10 }] },
+
+      // Water
+      'squirtle': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 10 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'wartortle': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 6 }] },
+      'blastoise': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 22 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'psyduck': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'golduck': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'poliwag': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'poliwhirl': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 10 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 6 }] },
+      'poliwrath': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'tentacool': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'tentacruel': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'slowpoke': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'slowbro': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'seel': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'dewgong': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'shellder': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'cloyster': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'krabby': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'kingler': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'horsea': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'seadra': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'goldeen': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'seaking': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 12 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'staryu': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'starmie': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'magikarp': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 4 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 8 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 4 }, { icon: 'fa-shield', label: 'Splash', dmg: 2 }] },
+      'gyarados': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 16 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 24 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 14 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 10 }] },
+      'lapras': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'vaporeon': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'omanyte': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 10 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 6 }] },
+      'omastar': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+
+      // Electric / Lightning
+      'pikachu': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 12 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'raichu': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 14 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'magnemite': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 10 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'magneton': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 14 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'voltorb': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 8 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'electrode': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 12 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'electabuzz': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 14 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'jolteon': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 14 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'zapdos': { category: '⚡ Lightning', attacks: [{ icon: 'fa-bolt', label: 'Thunder Shock', dmg: 18 }, { icon: 'fa-bolt', label: 'Thunderbolt', dmg: 24 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 14 }, { icon: 'fa-shield', label: 'Growl', dmg: 10 }] },
+
+      // Ground / Rock
+      'sandshrew': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 8 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 6 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 5 }] },
+      'sandslash': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 12 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 8 }] },
+      'nidoran♂': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 8 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 6 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 5 }] },
+      'nidorina': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 10 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 6 }] },
+      'nidoqueen': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 14 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 12 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 10 }] },
+      'nidoran♀': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 8 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 6 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 5 }] },
+      'nidorino': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 10 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 6 }] },
+      'nidoking': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 14 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 12 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 10 }] },
+      'geodude': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 8 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 5 }] },
+      'graveler': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 12 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 8 }] },
+      'golem': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 16 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 22 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 14 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 10 }] },
+      'onix': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 10 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 6 }] },
+      'cubone': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 8 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 6 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 5 }] },
+      'marowak': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 12 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 8 }] },
+      'rhyhorn': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 10 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 6 }] },
+      'rhydon': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 14 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 10 }] },
+
+      // Psychic
+      'abra': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 10 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Barrier', dmg: 5 }] },
+      'kadabra': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 14 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Barrier', dmg: 8 }] },
+      'alakazam': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 18 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 24 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 14 }, { icon: 'fa-shield', label: 'Barrier', dmg: 10 }] },
+      'drowzee': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 8 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Barrier', dmg: 5 }] },
+      'hypno': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 14 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Barrier', dmg: 8 }] },
+      'mr-mime': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 10 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Barrier', dmg: 6 }] },
+      'jynx': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 12 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Barrier', dmg: 6 }] },
+      'mewtwo': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 20 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 28 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 16 }, { icon: 'fa-shield', label: 'Barrier', dmg: 12 }] },
+      'mew': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 16 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 22 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Barrier', dmg: 10 }] },
+
+      // Normal / Default
+      'pidgey': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-wing', label: 'Gust', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'pidgeotto': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-wing', label: 'Gust', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'pidgeot': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 14 }, { icon: 'fa-wing', label: 'Gust', dmg: 18 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 16 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'rattata': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 8 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'raticate': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'spearow': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-wing', label: 'Gust', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'fearow': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-wing', label: 'Gust', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 14 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'ekans': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'arbok': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'clefairy': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }, { icon: 'fa-heart', label: 'Pound', dmg: 6 }] },
+      'clefable': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }, { icon: 'fa-heart', label: 'Pound', dmg: 10 }] },
+      'jigglypuff': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-music', label: 'Sing', dmg: 4 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'wigglytuff': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-music', label: 'Sing', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'zubat': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-wing', label: 'Gust', dmg: 8 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'golbat': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-wing', label: 'Gust', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'paras': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }, { icon: 'fa-leaf', label: 'Vine Whip', dmg: 8 }] },
+      'parasect': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }, { icon: 'fa-leaf', label: 'Vine Whip', dmg: 12 }] },
+      'venonat': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 10 }] },
+      'venomoth': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 14 }] },
+      'diglett': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 6 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 6 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 4 }] },
+      'dugtrio': { category: '🪨 Ground', attacks: [{ icon: 'fa-mountain', label: 'Sand Attack', dmg: 10 }, { icon: 'fa-rock', label: 'Rock Throw', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 }, { icon: 'fa-shield', label: 'Defense Curl', dmg: 8 }] },
+      'meowth': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'persian': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 10 }, { icon: 'fa-shield', label: 'Growl', dmg: 6 }] },
+      'mankey': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 6 }, { icon: 'fa-shield', label: 'Growl', dmg: 4 }] },
+      'primeape': { category: '⬜ Normal', attacks: [{ icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'growlithe': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 10 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 8 }, { icon: 'fa-shield', label: 'Growl', dmg: 5 }] },
+      'arcanine': { category: '🔥 Fire', attacks: [{ icon: 'fa-fire', label: 'Ember', dmg: 16 }, { icon: 'fa-fire-flame-curved', label: 'Flamethrower', dmg: 22 }, { icon: 'fa-fist-raised', label: 'Scratch', dmg: 12 }, { icon: 'fa-shield', label: 'Growl', dmg: 8 }] },
+      'poliwag': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 8 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 14 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 5 }] },
+      'poliwhirl': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 10 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 6 }] },
+      'poliwrath': { category: '💧 Water', attacks: [{ icon: 'fa-droplet', label: 'Water Gun', dmg: 14 }, { icon: 'fa-water', label: 'Hydro Pump', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 12 }, { icon: 'fa-shield', label: 'Withdraw', dmg: 8 }] },
+      'abra': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 10 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 16 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 6 }, { icon: 'fa-shield', label: 'Barrier', dmg: 5 }] },
+      'kadabra': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 14 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 20 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 10 }, { icon: 'fa-shield', label: 'Barrier', dmg: 8 }] },
+      'alakazam': { category: '🔮 Psychic', attacks: [{ icon: 'fa-brain', label: 'Confusion', dmg: 18 }, { icon: 'fa-eye', label: 'Psybeam', dmg: 24 }, { icon: 'fa-fist-raised', label: 'Tackle', dmg: 14 }, { icon: 'fa-shield', label: 'Barrier', dmg: 10 }] },
+    };
+
+    // Default attacks for Pokémon not in map
+    const defaultAttacks = [
+      { icon: 'fa-fist-raised', label: 'Tackle', dmg: 8 },
+      { icon: 'fa-fist-raised', label: 'Scratch', dmg: 10 },
+      { icon: 'fa-fist-raised', label: 'Quick Attack', dmg: 12 },
+      { icon: 'fa-shield', label: 'Growl', dmg: 5 }
+    ];
+    const defaultCategory = '⬜ Normal';
+
+    function getPokemonData(name) {
+      const key = name.toLowerCase();
+      if (categoryMap[key]) return categoryMap[key];
+      return { category: defaultCategory, attacks: defaultAttacks };
+    }
+
+    // ----- STATE -----
+    let allPokemon = [];
+    let selectedFighters = [];
+    let battleActive = false;
+    let turnIndex = 0;
+
+    // DOM refs
+    const gridEl = document.getElementById('pokemon-grid');
+    const historyContainer = document.getElementById('history-container');
+    const inputEl = document.getElementById('pokemon-input');
+    const searchBtn = document.getElementById('search-btn');
+    const randomBtn = document.getElementById('random-btn');
+    const resetBtn = document.getElementById('reset-battle-btn');
+
+    const f1Img = document.getElementById('f1-img');
+    const f1Name = document.getElementById('f1-name');
+    const f1Category = document.getElementById('f1-category');
+    const f1Hp = document.getElementById('f1-hp');
+    const f1HpText = document.getElementById('f1-hp-text');
+    const f2Img = document.getElementById('f2-img');
+    const f2Name = document.getElementById('f2-name');
+    const f2Category = document.getElementById('f2-category');
+    const f2Hp = document.getElementById('f2-hp');
+    const f2HpText = document.getElementById('f2-hp-text');
+
+    const battleLog = document.getElementById('battle-log');
+    const logMsg = battleLog.querySelector('.log-message');
+    const attackBtns = document.querySelectorAll('.attack-btn');
+
+    const detailOverlay = document.getElementById('detailOverlay');
+    const detailImg = document.getElementById('detailImg');
+    const detailName = document.getElementById('detailName');
+    const detailCategory = document.getElementById('detailCategory');
+    const detailId = document.getElementById('detailId');
+    const detailAttacks = document.getElementById('detailAttacks');
+    const closeDetail = document.getElementById('closeDetail');
+
+    // ----- SOUND -----
+    function playSound(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        gain.gain.value = 0.12;
+        let freq = 400, duration = 0.15;
+        if (type === 'tackle') { freq = 300; duration = 0.12; gain.gain.value = 0.15; }
+        else if (type === 'flame') { freq = 200; duration = 0.25; osc.type = 'sawtooth'; gain.gain.value = 0.10; }
+        else if (type === 'thunder') { freq = 600; duration = 0.08; osc.type = 'square'; gain.gain.value = 0.10; }
+        else if (type === 'hydro') { freq = 150; duration = 0.3; osc.type = 'sine'; gain.gain.value = 0.12; }
+        else if (type === 'hit') { freq = 800; duration = 0.06; gain.gain.value = 0.08; }
+        else if (type === 'faint') { freq = 100; duration = 0.5; osc.type = 'sawtooth'; gain.gain.value = 0.08; }
+        else if (type === 'select') { freq = 500; duration = 0.08; gain.gain.value = 0.06; }
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
+        if (type === 'hit') {
+          const osc2 = ctx.createOscillator();
+          const g2 = ctx.createGain();
+          osc2.connect(g2); g2.connect(ctx.destination);
+          g2.gain.value = 0.06;
+          osc2.frequency.setValueAtTime(1200, ctx.currentTime);
+          osc2.start(ctx.currentTime + 0.03);
+          osc2.stop(ctx.currentTime + 0.08);
+        }
+      } catch (e) { /* silent */ }
+    }
+
+    // ----- HELPERS -----
+    function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+
+    async function fetchAllPokemon() {
+      try {
+        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+        const data = await res.json();
+        return data.results.map((item, i) => {
+          const id = i+1;
+          return { id, name: item.name, sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png` };
+        });
+      } catch { return []; }
+    }
+
+    function renderGrid(list) {
+      if (!list || !list.length) {
+        gridEl.innerHTML = `<div class="placeholder-state">✨ No Pokémon found</div>`;
+        return;
+      }
+      let html = '';
+      list.forEach(p => {
+        const data = getPokemonData(p.name);
+        html += `
+          <div class="pokemon-card" data-id="${p.id}" data-name="${p.name}" data-sprite="${p.sprite}">
+            <img src="${p.sprite}" alt="${p.name}" loading="lazy">
+            <span class="name">${capitalize(p.name)}</span>
+            <span class="id">#${String(p.id).padStart(3, '0')}</span>
+            <span class="category-badge">${data.category}</span>
+            <span class="detail-badge"><i class="fas fa-eye"></i></span>
+          </div>
+        `;
+      });
+      gridEl.innerHTML = html;
+      document.querySelectorAll('.pokemon-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const id = parseInt(this.dataset.id);
+          const name = this.dataset.name;
+          const sprite = this.dataset.sprite;
+          showDetail(id, name, sprite);
+        });
+        card.addEventListener('dblclick', function() {
+          const id = parseInt(this.dataset.id);
+          const name = this.dataset.name;
+          const sprite = this.dataset.sprite;
+          selectFighter({ id, name, sprite, hp: 100, maxHp: 100 });
+        });
+      });
+    }
+
+    // ----- DETAIL MODAL -----
+    function showDetail(id, name, sprite) {
+      playSound('select');
+      const data = getPokemonData(name);
+      detailImg.src = sprite;
+      detailName.textContent = capitalize(name);
+      detailCategory.textContent = data.category;
+      detailId.textContent = `#${String(id).padStart(3, '0')}`;
+      detailAttacks.innerHTML = data.attacks.map(m => 
+        `<span class="d-attack-tag"><i class="fas ${m.icon}"></i> ${m.label} ${m.dmg}</span>`
+      ).join('');
+      detailOverlay.style.display = 'flex';
+      detailOverlay.onclick = function(e) { if (e.target === detailOverlay) closeDetailModal(); };
+      // Add select button
+      const oldBtn = detailAttacks.parentElement.querySelector('.detail-select-btn');
+      if (oldBtn) oldBtn.remove();
+      const selectBtn = document.createElement('button');
+      selectBtn.textContent = '⚡ Select for Battle';
+      selectBtn.className = 'detail-select-btn';
+      selectBtn.style.cssText = 'margin-top:0.8rem; background:#facc15; border:none; padding:0.3rem 1.5rem; border-radius:60px; font-weight:700; color:#0f172a; cursor:pointer;';
+      selectBtn.onclick = function(e) {
+        e.stopPropagation();
+        closeDetailModal();
+        selectFighter({ id, name, sprite, hp: 100, maxHp: 100 });
+      };
+      detailAttacks.parentElement.appendChild(selectBtn);
+    }
+
+    function closeDetailModal() { detailOverlay.style.display = 'none'; }
+    closeDetail.addEventListener('click', closeDetailModal);
+
+    // ----- SELECT FIGHTER -----
+    function selectFighter(pokemon) {
+      if (battleActive) {
+        setLog('⚔️ Battle in progress! Reset to change fighters.', 'fa-crosshairs');
+        return;
+      }
+      if (selectedFighters.some(f => f.id === pokemon.id)) {
+        setLog(`⚠️ ${capitalize(pokemon.name)} already selected.`, 'fa-triangle-exclamation');
+        return;
+      }
+      if (selectedFighters.length >= 2) {
+        setLog('⚠️ Two fighters already selected. Reset to change.', 'fa-triangle-exclamation');
+        return;
+      }
+      const fighter = { ...pokemon, hp: 100, maxHp: 100 };
+      selectedFighters.push(fighter);
+      playSound('select');
+      updateBattleUI();
+      if (selectedFighters.length === 2) {
+        setLog('⚡ Both ready! Choose an attack.', 'fa-bolt');
+        enableAttacks(true);
+      } else {
+        setLog(`👉 Select second fighter.`, 'fa-hand-pointer');
+        enableAttacks(false);
+      }
+    }
+
+    function enableAttacks(enabled) {
+      attackBtns.forEach(btn => btn.disabled = !enabled);
+    }
+
+    function updateBattleUI() {
+      if (selectedFighters.length >= 1) {
+        const f1 = selectedFighters[0];
+        const data1 = getPokemonData(f1.name);
+        f1Img.src = f1.sprite;
+        f1Name.textContent = capitalize(f1.name);
+        f1Category.textContent = data1.category;
+        updateHpBar(f1Hp, f1HpText, f1);
+      } else {
+        f1Img.src = ''; f1Name.textContent = '—'; f1Category.textContent = '—';
+        f1Hp.style.width = '100%'; f1Hp.className = 'hp-fill'; f1HpText.textContent = 'HP 100';
+      }
+      if (selectedFighters.length >= 2) {
+        const f2 = selectedFighters[1];
+        const data2 = getPokemonData(f2.name);
+        f2Img.src = f2.sprite;
+        f2Name.textContent = capitalize(f2.name);
+        f2Category.textContent = data2.category;
+        updateHpBar(f2Hp, f2HpText, f2);
+      } else {
+        f2Img.src = ''; f2Name.textContent = '—'; f2Category.textContent = '—';
+        f2Hp.style.width = '100%'; f2Hp.className = 'hp-fill'; f2HpText.textContent = 'HP 100';
+      }
+    }
+
+    function updateHpBar(barEl, textEl, fighter) {
+      const percent = (fighter.hp / fighter.maxHp) * 100;
+      barEl.style.width = Math.max(0, percent) + '%';
+      barEl.className = 'hp-fill' + (percent < 25 ? ' low' : percent < 50 ? ' mid' : '');
+      textEl.textContent = `HP ${Math.floor(fighter.hp)}/${fighter.maxHp}`;
+    }
+
+    function setLog(msg, icon = 'fa-circle-info') {
+      logMsg.textContent = msg;
+      const i = battleLog.querySelector('i');
+      if (i) i.className = `fas ${icon}`;
+    }
+
+    // ----- ATTACK LOGIC -----
+    function handleAttack(damage, attackName, soundType) {
+      if (battleActive) {
+        setLog('⏳ Wait for the attack to finish.', 'fa-hourglass-half');
+        return;
+      }
+      if (selectedFighters.length < 2) {
+        setLog('⚠️ Need two fighters!', 'fa-triangle-exclamation');
+        return;
+      }
+      if (selectedFighters[0].hp <= 0 || selectedFighters[1].hp <= 0) {
+        setLog('💀 A fighter fainted! Reset to battle again.', 'fa-skull');
+        enableAttacks(false);
+        return;
+      }
+
+      const attacker = selectedFighters[turnIndex];
+      const defender = selectedFighters[1 - turnIndex];
+      const actualDmg = Math.min(damage, defender.hp);
+      defender.hp = Math.max(0, defender.hp - actualDmg);
+      
+      playSound(soundType || 'tackle');
+      setTimeout(() => playSound('hit'), 100);
+
+      const msg = `${capitalize(attacker.name)} used ${attackName}! -${actualDmg} HP to ${capitalize(defender.name)}`;
+      setLog(msg, 'fa-bolt');
+      updateBattleUI();
+
+      if (defender.hp <= 0) {
+        playSound('faint');
+        setLog(`🏆 ${capitalize(attacker.name)} wins!`, 'fa-trophy');
+        enableAttacks(false);
+        battleActive = false;
+        return;
+      }
+
+      turnIndex = 1 - turnIndex;
+      const nextAttacker = selectedFighters[turnIndex];
+      setLog(`⏳ ${capitalize(nextAttacker.name)}'s turn — choose attack`, 'fa-arrow-right');
+      battleActive = false;
+      enableAttacks(true);
+    }
+
+    function resetBattle() {
+      selectedFighters = [];
+      battleActive = false;
+      turnIndex = 0;
+      enableAttacks(false);
+      setLog('🔄 Select two Pokémon from the grid.', 'fa-rotate');
+      f1Img.src = ''; f1Name.textContent = '—'; f1Category.textContent = '—';
+      f1Hp.style.width = '100%'; f1Hp.className = 'hp-fill'; f1HpText.textContent = 'HP 100';
+      f2Img.src = ''; f2Name.textContent = '—'; f2Category.textContent = '—';
+      f2Hp.style.width = '100%'; f2Hp.className = 'hp-fill'; f2HpText.textContent = 'HP 100';
+    }
+
+    // ----- SEARCH / RANDOM / HISTORY -----
+    function searchPokemon() {
+      const term = inputEl.value.trim().toLowerCase();
+      if (!term) { renderGrid(allPokemon); return; }
+      const filtered = allPokemon.filter(p => p.name.includes(term) || String(p.id) === term);
+      renderGrid(filtered);
+      addHistory(term);
+    }
+
+    function addHistory(term) {
+      const chip = document.createElement('span');
+      chip.className = 'history-chip';
+      chip.textContent = term;
+      chip.addEventListener('click', function() { inputEl.value = term; searchPokemon(); });
+      historyContainer.prepend(chip);
+      if (historyContainer.children.length > 12) historyContainer.lastChild.remove();
+    }
+
+    function randomSearch() {
+      if (!allPokemon.length) return;
+      const rand = allPokemon[Math.floor(Math.random() * allPokemon.length)];
+      inputEl.value = rand.name;
+      searchPokemon();
+    }
+
+    // ----- INIT -----
+    async function init() {
+      allPokemon = await fetchAllPokemon();
+      renderGrid(allPokemon);
+      resetBattle();
+
+      searchBtn.addEventListener('click', searchPokemon);
+      inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') searchPokemon(); });
+      randomBtn.addEventListener('click', randomSearch);
+      resetBtn.addEventListener('click', resetBattle);
+
+      attackBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const dmg = parseInt(this.dataset.dmg);
+          const sound = this.dataset.sound || 'tackle';
+          const name = this.textContent.trim().replace(/\d+$/, '').trim();
+          handleAttack(dmg, name, sound);
+        });
+      });
+
+      historyContainer.innerHTML = `<span class="history-chip" style="border:1px dashed #475569;"><i class="fas fa-clock"></i> history</span>`;
+      setLog('👋 Click a Pokémon for details, double-click to select.', 'fa-hand-peace');
+    }
+
+    init();
+  })();
+</script>
 </body>
 </html>
