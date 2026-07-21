@@ -17,7 +17,7 @@ async function getPokemonData(targetQuery) {
 
     try {
         renderLoading();
-
+        //GET
         const response = await fetch(apiUrl);
 
         if (!response.ok) {
